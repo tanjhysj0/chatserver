@@ -25,11 +25,12 @@ class TestChat(unittest.TestCase):
 
         self.mock_openrouter.send.return_value = ("this is a mock response from AI","")
 
+
+        self.chat_service.chat_history_dao.storage.count_documents.return_value = 1
+
         # 调用方法
         response,err = self.chat_service.get_ai_chat_response(mock_request)
         
-
-
         # 断言响应是预期的结果 (这取决于send方法实际如何处理请求)
         self.assertEqual(response, "this is a mock response from AI")
 

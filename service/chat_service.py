@@ -6,6 +6,7 @@ from datetime import datetime, timezone,timedelta
 from requests import Response
 from service.log_service import getLog
 from typing import Tuple,List
+from until.time import get_now_date
 class ChatService:
     def __init__(self) -> None:
         self.chat_history_dao = ChatHistoryDao()
@@ -15,7 +16,8 @@ class ChatService:
         self.second_count = 3
     def get_ai_chat_response(self,request:AIChatRequest)->Tuple[str,str]:
         #检查是否够条件
-        self.check(request.user_name)
+        if self.check(request.user_name) is False:
+            return "","超出限制"
 
         #取得AI的回复
         MAX_TOKENS = 8192
@@ -43,16 +45,17 @@ class ChatService:
             return False
         #检查一秒内是否超过3条消息
         if  self.chat_history_dao.get_second_chat_count(user_name) > self.second_count:
-            self.log.warning("今天的请求次数超过{}".format(self.second_count))
+            self.log.warning("一秒内的请求次数超过{}".format(self.second_count))
             return False
         return True
 
     def get_user_chat_history(self,request:UserChatHistoryRequest)->List[ChatMessage]:
         return self.chat_history_dao.get_chat_history_for_user(request.user_name,request.last_n)
 
-    
+    def get_get_today(self)->str:
+        return datetime.now(timezone.utc).strftime("%Y-%m-%d")
     def get_chat_status_today(self,request:UserStatusRequest)->int:
-        return self.chat_history_dao.get_chat_count(request.user_name,datetime.now(timezone.utc).strftime("%Y-%m-%d"))
+        return self.chat_history_dao.get_chat_count(request.user_name,get_now_date())
 
     def middle_out_text(self,text: str, max_tokens: int, approx_token_length: int) -> str:
         """
