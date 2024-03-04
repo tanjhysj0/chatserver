@@ -11,7 +11,12 @@ class ChatService:
         self.chat_history_dao = ChatHistoryDao()
         self.openrouter = Openrouter()
         self.log = getLog()
+        self.date_count = 20
+        self.second_count = 3
     def get_ai_chat_response(self,request:AIChatRequest)->Tuple[str,str]:
+        #检查是否够条件
+        self.check(request.user_name)
+
         #取得AI的回复
         MAX_TOKENS = 8192
         APPROX_TOKEN_LENGTH = 4  # This is an estimation, adjust based on the actual language model
@@ -31,6 +36,16 @@ class ChatService:
         self.chat_history_dao.insert_chat(request.user_name,replay_response,"ai")
         self.log.info("记录数据库成功")
         return replay_response,""
+    def check(self,user_name:str)->bool:
+        #检查当天发送消息数
+        if self.get_chat_status_today(UserStatusRequest(user_name=user_name)) > self.date_count:
+            self.log.warning("今天的请求次数超过{}".format(self.date_count))
+            return False
+        #检查一秒内是否超过3条消息
+        if  self.chat_history_dao.get_second_chat_count(user_name) > self.second_count:
+            self.log.warning("今天的请求次数超过{}".format(self.second_count))
+            return False
+        return True
 
     def get_user_chat_history(self,request:UserChatHistoryRequest)->List[ChatMessage]:
         return self.chat_history_dao.get_chat_history_for_user(request.user_name,request.last_n)

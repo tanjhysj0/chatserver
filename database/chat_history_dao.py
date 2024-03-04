@@ -6,6 +6,9 @@ from datetime import datetime, timezone,timedelta
 class ChatHistoryDao:
     def __init__(self) -> None:
         self.storage = MongoDBManager()
+
+    def get_now_timestamp(self):
+        return datetime.now(timezone.utc).astimezone(timezone(timedelta(hours=8)))
     #取得历史
     def get_chat_history_for_user(self,user_name: str, last_n: int) -> List[ChatMessage]:
         where = {
@@ -17,7 +20,7 @@ class ChatHistoryDao:
         return result
     #写入数据库
     def insert_chat(self,user_name:str,message:str,role:str):
-        current_time = datetime.now(timezone.utc).astimezone(timezone(timedelta(hours=8)))
+        current_time = self.get_now_timestamp()
         document = {
             "type":role,
             "user_name":user_name,
@@ -32,4 +35,13 @@ class ChatHistoryDao:
             "date":date
         })
     
+    def get_second_chat_count(self,user_name)->int:
+        current_time = self.get_now_timestamp()
 
+        one_second_before = current_time - timedelta(seconds=1)
+        return self.storage.count_documents({
+            "user_name":user_name,
+            "timestamp":{
+                "$gte":one_second_before
+            }
+        })
