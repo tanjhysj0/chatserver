@@ -1,7 +1,7 @@
 from pymongo import MongoClient
 from typing import List
 class MongoDBManager:
-    def __init__(self, host='localhost', port=27017, db_name='chat_bot', collection_name='chat_history'):
+    def __init__(self, host='mongo', port=27017, db_name='chat_bot', collection_name='chat_history'):
         # 初始化MongoDB连接
         self.client = MongoClient(host, port)
         self.db = self.client[db_name]
