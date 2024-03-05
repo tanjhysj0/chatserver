@@ -1,7 +1,5 @@
+
 # 安装启动说明
-
-
-
 
 + python3.11环境下
 ``` shell
@@ -12,11 +10,14 @@ uvicorn main:app --host  0.0.0.0  --port  80 --reload
 ``` shell
 docker-compose up
 ```
-
-
++ 运行单元测试
+``` jason
+pytest
+```
 
 # API接口说明
 下面的请求接口全要根上http://{base_url}
+当前测试地址为:http://120.76.241.138
 ### 发送消息
 #### 请求地址
 > /get_ai_chat_response

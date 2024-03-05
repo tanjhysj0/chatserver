@@ -52,8 +52,6 @@ class ChatService:
     def get_user_chat_history(self,request:UserChatHistoryRequest)->List[ChatMessage]:
         return self.chat_history_dao.get_chat_history_for_user(request.user_name,request.last_n)
 
-    def get_get_today(self)->str:
-        return datetime.now(timezone.utc).strftime("%Y-%m-%d")
     def get_chat_status_today(self,request:UserStatusRequest)->int:
         return self.chat_history_dao.get_chat_count(request.user_name,get_now_date())
 
