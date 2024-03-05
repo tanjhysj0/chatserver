@@ -32,9 +32,11 @@ pytest
 ```
 ### 响应参数
 ``` json
+{
     "msg": "localhost:27017: [Errno 111] Connection refused ",
     "code": 500,
     "response": "正确时这里是正确的回答"
+}
 ```
 
 ### 取得历史聊天记录
